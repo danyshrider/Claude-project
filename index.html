@@ -20,6 +20,7 @@
     --radius: 14px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
     background: var(--ivory);
     color: var(--ink);
@@ -30,6 +31,71 @@
     font-family: Georgia, "Times New Roman", serif;
     font-weight: 500;
   }
+
+  /* ---------- Top bar & auth ---------- */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    padding: 12px 26px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .topbar .brand {
+    font-family: Georgia, serif;
+    letter-spacing: .22em; text-transform: uppercase;
+    font-size: .78rem; color: var(--gold);
+  }
+  .google-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--line); background: #fff;
+    padding: 8px 18px; border-radius: 999px;
+    cursor: pointer; font-size: .88rem; color: var(--ink);
+    font-family: inherit; transition: all .2s ease;
+  }
+  .google-btn:hover { border-color: var(--gold); box-shadow: var(--shadow); }
+  .user-chip { display: flex; align-items: center; gap: 10px; }
+  .user-chip img, .user-chip .initial { width: 34px; height: 34px; border-radius: 50%; }
+  .user-chip .initial {
+    background: var(--green); color: #fdfbf6;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif;
+  }
+  .user-chip .who { text-align: right; line-height: 1.25; }
+  .user-chip .who .nm { font-size: .85rem; }
+  .user-chip .who .em { font-size: .72rem; color: var(--ink-soft); }
+  .signout {
+    background: none; border: 1px solid var(--line); color: var(--ink-soft);
+    font-size: .72rem; letter-spacing: .06em;
+    padding: 5px 12px; border-radius: 999px; cursor: pointer;
+  }
+  .signout:hover { border-color: var(--maroon); color: var(--maroon); }
+
+  .cat-btn.history-tab { border-color: var(--gold-soft); color: var(--maroon); }
+  .cat-btn.history-tab.active { background: var(--maroon); border-color: var(--maroon); color: #fdfbf6; }
+
+  .history-wrap { max-width: 1280px; margin: 28px auto 80px; padding: 0 24px; }
+  .hist-sub { color: var(--ink-soft); font-size: .88rem; font-style: italic; margin: -8px 0 18px; }
+  .viewed-note { font-size: .78rem; color: var(--maroon); }
+  .btn.small { flex: 0 0 auto; padding: 7px 16px; font-size: .8rem; border-radius: 999px; }
+
+  dialog#loginDlg {
+    border: none; border-radius: var(--radius); padding: 0;
+    width: min(420px, calc(100vw - 40px));
+    box-shadow: 0 30px 80px rgba(0,0,0,.3);
+    background: var(--paper); color: var(--ink);
+  }
+  dialog#loginDlg::backdrop { background: rgba(45, 38, 30, .55); }
+  .login-body { padding: 30px; text-align: center; }
+  .login-body h3 { font-size: 1.3rem; margin-bottom: 6px; }
+  .login-body p { color: var(--ink-soft); font-size: .86rem; margin-bottom: 18px; }
+  .login-body input {
+    width: 100%; padding: 11px 14px;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--ivory); font-size: .95rem;
+    margin-bottom: 8px; font-family: inherit;
+  }
+  .login-body input:focus { outline: 2px solid var(--gold-soft); }
+  .login-body .err { color: var(--maroon); font-size: .8rem; min-height: 1.2em; margin-bottom: 10px; }
 
   /* ---------- Hero ---------- */
   header.hero {
@@ -283,6 +349,11 @@
 </head>
 <body>
 
+<div class="topbar">
+  <div class="brand">Kasih &amp; Kahwin</div>
+  <div class="auth-area" id="authArea"></div>
+</div>
+
 <header class="hero">
   <div class="eyebrow">A Malaysian Wedding Gallery</div>
   <h1>Kasih <em>&amp;</em> Kahwin</h1>
@@ -293,7 +364,7 @@
 
 <nav class="categories" id="categoryTabs" aria-label="Wedding categories"></nav>
 
-<div class="layout">
+<div class="layout" id="galleryView">
   <aside class="filters" aria-label="Filters">
     <h2>Refine <button id="clearBtn" type="button">Clear all</button></h2>
 
@@ -350,6 +421,40 @@
   </main>
 </div>
 
+<div class="history-wrap" id="historyView" hidden>
+  <div class="gallery-head">
+    <h2>Your View History</h2>
+    <button class="btn ghost small" id="clearHistoryBtn" type="button" hidden>Clear history</button>
+  </div>
+  <p class="hist-sub" id="histSub"></p>
+  <div class="grid" id="historyGrid"></div>
+  <div class="empty" id="histEmpty" hidden>
+    <div class="big">🕊️</div>
+    <h3>Nothing viewed yet</h3>
+    <p>Weddings you open from the gallery will appear here.</p>
+  </div>
+  <div class="empty" id="histGate" hidden>
+    <div class="big">💌</div>
+    <h3>Sign in to see your view history</h3>
+    <p>Log in with your Gmail account and every wedding you view will be saved here.</p>
+    <br>
+    <button class="btn primary small" id="gateLoginBtn" type="button" style="padding:10px 26px">Sign in with Gmail</button>
+  </div>
+</div>
+
+<dialog id="loginDlg">
+  <div class="login-body">
+    <h3 class="serif">Sign in with Gmail</h3>
+    <p id="loginNote">Enter your Gmail address to sign in.</p>
+    <input type="email" id="loginEmail" placeholder="you@gmail.com" autocomplete="email">
+    <div class="err" id="loginErr"></div>
+    <div class="modal-actions">
+      <button class="btn primary" id="loginGo" type="button">Sign In</button>
+      <button class="btn ghost" id="loginCancel" type="button">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
 <dialog id="detail">
   <div class="modal-art" id="modalArt"></div>
   <div class="modal-body">
@@ -377,6 +482,13 @@
 </footer>
 
 <script>
+/* ============ Auth config ============
+   For REAL Google Sign-In: create an OAuth 2.0 Client ID (Web application) at
+   https://console.cloud.google.com/apis/credentials, add this site's URL to
+   "Authorized JavaScript origins", and paste the client ID below.
+   Left empty, the site falls back to a demo Gmail login (type your address). */
+const GOOGLE_CLIENT_ID = "";
+
 /* ============ Data ============ */
 const SERVICES = [
   "Make-up Artist (MUA)",
@@ -620,7 +732,11 @@ function flowers(color, points) {
 
 /* ============ State & filtering ============ */
 const CATEGORIES = ["All", "Malay", "Chinese", "Indian", "Peranakan", "Fusion"];
-const state = { category: "All", venue: "", theme: "", budget: "", pax: "", services: new Set() };
+const state = { view: "gallery", category: "All", venue: "", theme: "", budget: "", pax: "", services: new Set() };
+
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const BY_ID = new Map(WEDDINGS.map(w => [slug(w.name), w]));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 const fmtRM = n => "RM" + n.toLocaleString("en-MY");
 const budgetLabel = ([lo, hi]) => hi >= 999999999 ? `Above ${fmtRM(lo)}` : `${fmtRM(lo)} – ${fmtRM(hi)}`;
@@ -646,8 +762,16 @@ const $ = id => document.getElementById(id);
 
 function renderTabs() {
   $("categoryTabs").innerHTML = CATEGORIES.map(c =>
-    `<button class="cat-btn ${c === state.category ? "active" : ""}" data-cat="${c}">
-      ${c === "All" ? "All Weddings" : c + " Wedding"}</button>`).join("");
+    `<button class="cat-btn ${state.view === "gallery" && c === state.category ? "active" : ""}" data-cat="${c}">
+      ${c === "All" ? "All Weddings" : c + " Wedding"}</button>`).join("") +
+    `<button class="cat-btn history-tab ${state.view === "history" ? "active" : ""}" data-view="history">♥ View History</button>`;
+}
+
+function renderView() {
+  $("galleryView").hidden = state.view !== "gallery";
+  $("historyView").hidden = state.view !== "history";
+  renderTabs();
+  if (state.view === "history") renderHistory(); else renderGrid();
 }
 
 function populateFilters() {
@@ -659,6 +783,30 @@ function populateFilters() {
     `<label class="chk"><input type="checkbox" value="${s}"> ${s}</label>`).join("");
 }
 
+function cardHTML(w, i, seedPrefix = "c", extraMeta = "") {
+  const shown = w.services.slice(0, 3);
+  const extra = w.services.length - shown.length;
+  return `
+  <article class="card" data-i="${i}" tabindex="0" role="button" aria-label="${w.name}">
+    <div class="art">${art(w.motif, w.palette, seedPrefix + i)}
+      <span class="cat-tag">${w.category}</span>
+    </div>
+    <div class="body">
+      <h3>${w.name}</h3>
+      <div class="meta">
+        <span>📍 <b>${w.venue}</b> · ${w.theme}</span>
+        <span>👥 ${w.pax} pax</span>
+        ${extraMeta}
+      </div>
+      <div class="price">${budgetLabel(w.budget)}</div>
+      <div class="chips">
+        ${shown.map(s => `<span class="chip">${s}</span>`).join("")}
+        ${extra > 0 ? `<span class="chip more">+${extra} more</span>` : ""}
+      </div>
+    </div>
+  </article>`;
+}
+
 function renderGrid() {
   const results = WEDDINGS.filter(matches);
   $("galleryTitle").textContent = state.category === "All" ? "All Weddings" : state.category + " Weddings";
@@ -666,32 +814,61 @@ function renderGrid() {
     ? `${results.length} wedding${results.length > 1 ? "s" : ""} found`
     : "";
   $("emptyState").hidden = results.length > 0;
-  $("grid").innerHTML = results.map(w => {
-    const i = WEDDINGS.indexOf(w);
-    const shown = w.services.slice(0, 3);
-    const extra = w.services.length - shown.length;
-    return `
-    <article class="card" data-i="${i}" tabindex="0" role="button" aria-label="${w.name}">
-      <div class="art">${art(w.motif, w.palette, i)}
-        <span class="cat-tag">${w.category}</span>
-      </div>
-      <div class="body">
-        <h3>${w.name}</h3>
-        <div class="meta">
-          <span>📍 <b>${w.venue}</b> · ${w.theme}</span>
-          <span>👥 ${w.pax} pax</span>
-        </div>
-        <div class="price">${budgetLabel(w.budget)}</div>
-        <div class="chips">
-          ${shown.map(s => `<span class="chip">${s}</span>`).join("")}
-          ${extra > 0 ? `<span class="chip more">+${extra} more</span>` : ""}
-        </div>
-      </div>
-    </article>`;
-  }).join("");
+  $("grid").innerHTML = results.map(w => cardHTML(w, WEDDINGS.indexOf(w))).join("");
+}
+
+/* ============ View history ============ */
+function relTime(t) {
+  const s = (Date.now() - t) / 1000;
+  if (s < 60) return "just now";
+  if (s < 3600) return `${Math.floor(s / 60)} min ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)} hr ago`;
+  if (s < 604800) return `${Math.floor(s / 86400)} day${s >= 172800 ? "s" : ""} ago`;
+  return "on " + new Date(t).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function readHistory() {
+  try { return JSON.parse(localStorage.getItem(historyKey())) || []; } catch { return []; }
+}
+
+function recordView(w) {
+  if (!currentUser) return;
+  const id = slug(w.name);
+  let h = readHistory();
+  const prev = h.find(e => e.id === id);
+  if (prev) {
+    prev.t = Date.now();
+    prev.n = (prev.n || 1) + 1;
+    h = [prev, ...h.filter(e => e.id !== id)];
+  } else {
+    h.unshift({ id, t: Date.now(), n: 1 });
+  }
+  localStorage.setItem(historyKey(), JSON.stringify(h.slice(0, 60)));
+}
+
+function renderHistory() {
+  const gate = !currentUser;
+  $("histGate").hidden = !gate;
+  if (gate) {
+    $("histSub").textContent = "";
+    $("historyGrid").innerHTML = "";
+    $("histEmpty").hidden = true;
+    $("clearHistoryBtn").hidden = true;
+    return;
+  }
+  const entries = readHistory().map(e => ({ ...e, w: BY_ID.get(e.id) })).filter(e => e.w);
+  $("histSub").textContent = `Signed in as ${currentUser.email}` +
+    (entries.length ? ` · ${entries.length} wedding${entries.length > 1 ? "s" : ""} viewed` : "");
+  $("histEmpty").hidden = entries.length > 0;
+  $("clearHistoryBtn").hidden = entries.length === 0;
+  $("historyGrid").innerHTML = entries.map(e =>
+    cardHTML(e.w, WEDDINGS.indexOf(e.w), "h",
+      `<span class="viewed-note">♥ Viewed ${relTime(e.t)}${e.n > 1 ? ` · ${e.n} times` : ""}</span>`)).join("");
 }
 
 function openModal(w, i) {
+  recordView(w);
+  if (state.view === "history") renderHistory();
   $("modalArt").innerHTML = art(w.motif, w.palette, "m" + i);
   $("mCat").textContent = w.category + " Wedding";
   $("mName").textContent = w.name;
@@ -707,13 +884,107 @@ function openModal(w, i) {
   $("detail").showModal();
 }
 
+/* ============ Auth (Google Sign-In with demo fallback) ============ */
+let googleReady = false;
+let currentUser = null;
+try { currentUser = JSON.parse(localStorage.getItem("kk_user")); } catch { }
+
+const G_LOGO = `<svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true">
+  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+</svg>`;
+
+function historyKey() { return "kk_history_" + currentUser.email; }
+
+function signIn(user) {
+  currentUser = user;
+  localStorage.setItem("kk_user", JSON.stringify(user));
+  renderAuth();
+  if (state.view === "history") renderHistory();
+}
+
+function signOut() {
+  if (currentUser?.mode === "google" && window.google?.accounts) google.accounts.id.disableAutoSelect();
+  currentUser = null;
+  localStorage.removeItem("kk_user");
+  renderAuth();
+  if (state.view === "history") renderHistory();
+}
+
+function loginFlow() {
+  if (googleReady) {
+    google.accounts.id.prompt();
+  } else {
+    $("loginErr").textContent = "";
+    $("loginEmail").value = "";
+    $("loginDlg").showModal();
+    $("loginEmail").focus();
+  }
+}
+
+function renderAuth() {
+  const el = $("authArea");
+  if (currentUser) {
+    el.innerHTML = `
+      <div class="user-chip">
+        <div class="who">
+          <div class="nm">${esc(currentUser.name)}</div>
+          <div class="em">${esc(currentUser.email)}${currentUser.mode === "demo" ? " · demo" : ""}</div>
+        </div>
+        ${currentUser.picture
+          ? `<img src="${esc(currentUser.picture)}" alt="" referrerpolicy="no-referrer">`
+          : `<span class="initial">${esc((currentUser.name || "?")[0].toUpperCase())}</span>`}
+        <button class="signout" id="signOutBtn" type="button">Sign out</button>
+      </div>`;
+    $("signOutBtn").addEventListener("click", signOut);
+  } else if (googleReady) {
+    el.innerHTML = `<div id="gBtn"></div>`;
+    google.accounts.id.renderButton($("gBtn"), { theme: "outline", size: "medium", shape: "pill", text: "signin_with" });
+  } else {
+    el.innerHTML = `<button class="google-btn" id="loginBtn" type="button">${G_LOGO} Sign in with Gmail</button>`;
+    $("loginBtn").addEventListener("click", loginFlow);
+  }
+}
+
+(function initGoogle() {
+  if (!GOOGLE_CLIENT_ID || location.protocol === "file:") return; // demo login fallback stays active
+  const s = document.createElement("script");
+  s.src = "https://accounts.google.com/gsi/client";
+  s.async = true;
+  s.onload = () => {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: res => {
+        try {
+          const b64 = res.credential.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+          const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+          const p = JSON.parse(new TextDecoder().decode(bytes));
+          signIn({ email: p.email, name: p.name || p.email.split("@")[0], picture: p.picture || "", mode: "google" });
+        } catch (err) {
+          console.error("Google sign-in failed:", err);
+        }
+      }
+    });
+    googleReady = true;
+    if (!currentUser) renderAuth();
+  };
+  document.head.appendChild(s);
+})();
+
 /* ============ Events ============ */
 $("categoryTabs").addEventListener("click", e => {
+  if (e.target.closest("[data-view]")) {
+    state.view = "history";
+    renderView();
+    return;
+  }
   const btn = e.target.closest("[data-cat]");
   if (!btn) return;
+  state.view = "gallery";
   state.category = btn.dataset.cat;
-  renderTabs();
-  renderGrid();
+  renderView();
 });
 $("venueSel").addEventListener("change", e => { state.venue = e.target.value; renderGrid(); });
 $("themeSel").addEventListener("change", e => { state.theme = e.target.value; renderGrid(); });
@@ -731,22 +1002,49 @@ $("clearBtn").addEventListener("click", () => {
   document.querySelectorAll("#servicesList input").forEach(c => c.checked = false);
   renderTabs(); renderGrid();
 });
-$("grid").addEventListener("click", e => {
-  const card = e.target.closest(".card");
-  if (card) openModal(WEDDINGS[+card.dataset.i], card.dataset.i);
+function attachCardHandlers(container) {
+  container.addEventListener("click", e => {
+    const card = e.target.closest(".card");
+    if (card) openModal(WEDDINGS[+card.dataset.i], card.dataset.i);
+  });
+  container.addEventListener("keydown", e => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const card = e.target.closest(".card");
+    if (card) { e.preventDefault(); openModal(WEDDINGS[+card.dataset.i], card.dataset.i); }
+  });
+}
+attachCardHandlers($("grid"));
+attachCardHandlers($("historyGrid"));
+
+$("gateLoginBtn").addEventListener("click", loginFlow);
+$("clearHistoryBtn").addEventListener("click", () => {
+  if (!currentUser) return;
+  if (confirm("Clear your entire view history?")) {
+    localStorage.removeItem(historyKey());
+    renderHistory();
+  }
 });
-$("grid").addEventListener("keydown", e => {
-  if (e.key !== "Enter" && e.key !== " ") return;
-  const card = e.target.closest(".card");
-  if (card) { e.preventDefault(); openModal(WEDDINGS[+card.dataset.i], card.dataset.i); }
+$("loginGo").addEventListener("click", () => {
+  const email = $("loginEmail").value.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    $("loginErr").textContent = "Please enter a valid email address.";
+    return;
+  }
+  const name = email.split("@")[0].replace(/[._\-]+/g, " ").trim()
+    .replace(/\b\w/g, c => c.toUpperCase()) || email;
+  $("loginDlg").close();
+  signIn({ email, name, picture: "", mode: "demo" });
 });
+$("loginCancel").addEventListener("click", () => $("loginDlg").close());
+$("loginEmail").addEventListener("keydown", e => { if (e.key === "Enter") $("loginGo").click(); });
+$("loginDlg").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
 $("closeBtn").addEventListener("click", () => $("detail").close());
 $("detail").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
 
 /* ============ Init ============ */
-renderTabs();
 populateFilters();
-renderGrid();
+renderAuth();
+renderView();
 </script>
 </body>
 </html>
