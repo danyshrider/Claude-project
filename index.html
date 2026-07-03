@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasih &amp; Kahwin — Malaysian Wedding Gallery</title>
+<style>
+  :root {
+    --ivory: #faf6f0;
+    --cream: #f3ece1;
+    --paper: #fffdf9;
+    --ink: #3d3229;
+    --ink-soft: #6f6357;
+    --gold: #b08d4f;
+    --gold-soft: #d8c39a;
+    --green: #4a5d4e;
+    --maroon: #7c3a3a;
+    --line: #e5dccd;
+    --shadow: 0 10px 30px rgba(61, 50, 41, .08);
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--ivory);
+    color: var(--ink);
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+  }
+  h1, h2, h3, .serif {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 500;
+  }
+
+  /* ---------- Hero ---------- */
+  header.hero {
+    text-align: center;
+    padding: 64px 24px 40px;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, #f6eddc 0%, transparent 70%),
+      var(--ivory);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero .eyebrow {
+    letter-spacing: .35em;
+    text-transform: uppercase;
+    font-size: .72rem;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    letter-spacing: .02em;
+    color: var(--ink);
+  }
+  .hero h1 em { font-style: italic; color: var(--maroon); }
+  .hero p.sub {
+    max-width: 560px;
+    margin: 14px auto 0;
+    color: var(--ink-soft);
+    font-size: 1rem;
+  }
+  .hero .ornament {
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px; margin-top: 22px; color: var(--gold);
+  }
+  .hero .ornament::before, .hero .ornament::after {
+    content: ""; width: 70px; height: 1px; background: var(--gold-soft);
+  }
+
+  /* ---------- Category tabs ---------- */
+  nav.categories {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 10px; padding: 26px 24px 6px;
+  }
+  .cat-btn {
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink-soft);
+    font-family: Georgia, serif;
+    font-size: .95rem;
+    padding: 9px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .cat-btn:hover { border-color: var(--gold); color: var(--ink); }
+  .cat-btn.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fdfbf6;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout {
+    display: grid;
+    grid-template-columns: 290px 1fr;
+    gap: 28px;
+    max-width: 1280px;
+    margin: 28px auto 80px;
+    padding: 0 24px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+  /* ---------- Filters ---------- */
+  aside.filters {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px 22px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 20px;
+  }
+  @media (max-width: 900px) { aside.filters { position: static; } }
+  .filters h2 {
+    font-size: 1.15rem;
+    letter-spacing: .06em;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .filters h2 button {
+    background: none; border: none; cursor: pointer;
+    color: var(--maroon); font-size: .75rem;
+    letter-spacing: .08em; text-transform: uppercase;
+  }
+  .filter-group { margin-bottom: 20px; }
+  .filter-group label.title {
+    display: block;
+    font-size: .72rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .filter-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--ivory);
+    color: var(--ink);
+    font-size: .92rem;
+    font-family: inherit;
+  }
+  .filter-group select:focus { outline: 2px solid var(--gold-soft); }
+  .services-list { display: flex; flex-direction: column; gap: 7px; }
+  .services-list label.chk {
+    display: flex; align-items: center; gap: 9px;
+    font-size: .88rem; color: var(--ink-soft);
+    cursor: pointer; user-select: none;
+  }
+  .services-list input[type="checkbox"] {
+    accent-color: var(--green);
+    width: 15px; height: 15px;
+  }
+  .services-list label.chk:hover { color: var(--ink); }
+
+  /* ---------- Gallery ---------- */
+  .gallery-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  }
+  .gallery-head h2 { font-size: 1.35rem; }
+  .gallery-head .count { color: var(--ink-soft); font-size: .88rem; font-style: italic; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 24px;
+  }
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform .22s ease, box-shadow .22s ease;
+    display: flex; flex-direction: column;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 40px rgba(61, 50, 41, .14);
+  }
+  .card .art { height: 190px; position: relative; overflow: hidden; }
+  .card .art svg { width: 100%; height: 100%; display: block; }
+  .card .cat-tag {
+    position: absolute; top: 12px; left: 12px;
+    background: rgba(253, 251, 246, .92);
+    color: var(--maroon);
+    font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 999px;
+  }
+  .card .body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .card h3 { font-size: 1.12rem; line-height: 1.35; }
+  .card .meta { font-size: .84rem; color: var(--ink-soft); display: grid; gap: 4px; }
+  .card .meta span b { color: var(--ink); font-weight: 600; }
+  .card .price {
+    font-family: Georgia, serif;
+    color: var(--green);
+    font-size: 1rem;
+  }
+  .card .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+  .chip {
+    font-size: .7rem;
+    background: var(--cream);
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .chip.more { background: transparent; border-style: dashed; }
+
+  .empty {
+    text-align: center;
+    padding: 80px 24px;
+    color: var(--ink-soft);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+  .empty .big { font-size: 2.4rem; margin-bottom: 10px; }
+  .empty h3 { font-family: Georgia, serif; color: var(--ink); margin-bottom: 6px; }
+
+  /* ---------- Modal ---------- */
+  dialog#detail {
+    border: none;
+    border-radius: var(--radius);
+    padding: 0;
+    max-width: 640px;
+    width: calc(100vw - 40px);
+    box-shadow: 0 30px 80px rgba(0,0,0,.3);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  dialog#detail::backdrop { background: rgba(45, 38, 30, .55); }
+  .modal-art { height: 220px; }
+  .modal-art svg { width: 100%; height: 100%; display: block; }
+  .modal-body { padding: 26px 30px 30px; }
+  .modal-body .cat { color: var(--maroon); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; }
+  .modal-body h3 { font-size: 1.5rem; margin: 6px 0 4px; }
+  .modal-body .desc { color: var(--ink-soft); font-size: .93rem; margin: 10px 0 18px; }
+  .fact-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px 20px; margin-bottom: 20px;
+  }
+  @media (max-width: 520px) { .fact-grid { grid-template-columns: 1fr; } }
+  .fact .k { font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+  .fact .v { font-size: .95rem; }
+  .modal-body h4 {
+    font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 8px;
+  }
+  .svc-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 24px; }
+  .svc-grid .chip { font-size: .78rem; padding: 5px 13px; }
+  .modal-actions { display: flex; gap: 12px; }
+  .btn {
+    flex: 1;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: .92rem;
+    cursor: pointer;
+    font-family: Georgia, serif;
+    letter-spacing: .04em;
+  }
+  .btn.primary { background: var(--green); color: #fdfbf6; border: 1px solid var(--green); }
+  .btn.primary:hover { background: #3d4f41; }
+  .btn.ghost { background: transparent; color: var(--ink-soft); border: 1px solid var(--line); }
+  .btn.ghost:hover { border-color: var(--gold); color: var(--ink); }
+
+  footer {
+    text-align: center;
+    padding: 34px 24px 44px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: .84rem;
+  }
+  footer .serif { color: var(--gold); letter-spacing: .3em; text-transform: uppercase; font-size: .72rem; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="eyebrow">A Malaysian Wedding Gallery</div>
+  <h1>Kasih <em>&amp;</em> Kahwin</h1>
+  <p class="sub">Browse curated wedding packages from across Malaysia — pick a wedding
+  category, then refine by venue, theme, budget, pax and the services you need.</p>
+  <div class="ornament serif">✦ ❀ ✦</div>
+</header>
+
+<nav class="categories" id="categoryTabs" aria-label="Wedding categories"></nav>
+
+<div class="layout">
+  <aside class="filters" aria-label="Filters">
+    <h2>Refine <button id="clearBtn" type="button">Clear all</button></h2>
+
+    <div class="filter-group">
+      <label class="title" for="venueSel">Venue</label>
+      <select id="venueSel"><option value="">Any venue</option></select>
+    </div>
+
+    <div class="filter-group">
+      <label class="title" for="themeSel">Theme</label>
+      <select id="themeSel"><option value="">Any theme</option></select>
+    </div>
+
+    <div class="filter-group">
+      <label class="title" for="budgetSel">Budget</label>
+      <select id="budgetSel">
+        <option value="">Any budget</option>
+        <option value="0-10000">Below RM10,000</option>
+        <option value="10000-30000">RM10,000 – RM30,000</option>
+        <option value="30000-60000">RM30,000 – RM60,000</option>
+        <option value="60000-100000">RM60,000 – RM100,000</option>
+        <option value="100000-999999999">Above RM100,000</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="title" for="paxSel">Pax</label>
+      <select id="paxSel">
+        <option value="">Any size</option>
+        <option value="0-100">Intimate · up to 100 pax</option>
+        <option value="101-300">Classic · 101 – 300 pax</option>
+        <option value="301-600">Grand · 301 – 600 pax</option>
+        <option value="601-99999">Kenduri Besar · 600+ pax</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="title">Services Included</label>
+      <div class="services-list" id="servicesList"></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="gallery-head">
+      <h2 id="galleryTitle">All Weddings</h2>
+      <span class="count" id="resultCount"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="emptyState" hidden>
+      <div class="big">🌸</div>
+      <h3>No weddings match your filters</h3>
+      <p>Try widening your budget or removing a service or two.</p>
+    </div>
+  </main>
+</div>
+
+<dialog id="detail">
+  <div class="modal-art" id="modalArt"></div>
+  <div class="modal-body">
+    <div class="cat" id="mCat"></div>
+    <h3 id="mName"></h3>
+    <p class="desc" id="mDesc"></p>
+    <div class="fact-grid">
+      <div class="fact"><div class="k">Venue</div><div class="v" id="mVenue"></div></div>
+      <div class="fact"><div class="k">Theme</div><div class="v" id="mTheme"></div></div>
+      <div class="fact"><div class="k">Budget</div><div class="v" id="mBudget"></div></div>
+      <div class="fact"><div class="k">Pax</div><div class="v" id="mPax"></div></div>
+    </div>
+    <h4>Services Included</h4>
+    <div class="svc-grid" id="mServices"></div>
+    <div class="modal-actions">
+      <button class="btn primary" id="enquireBtn" type="button">Enquire About This Package</button>
+      <button class="btn ghost" id="closeBtn" type="button">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<footer>
+  <div class="serif">Kasih &amp; Kahwin</div>
+  Celebrating Malay, Chinese, Indian, Peranakan &amp; fusion weddings across Malaysia.
+</footer>
+
+<script>
+/* ============ Data ============ */
+const SERVICES = [
+  "Make-up Artist (MUA)",
+  "Wedding Dress & Attire",
+  "Photographer",
+  "Videographer",
+  "R&B Food Stalls",
+  "Pelamin",
+  "Number of Tables",
+  "Catering",
+  "Live Band / DJ",
+  "Emcee",
+  "Door Gifts",
+  "Decorations & Florals"
+];
+
+/* Each package: category, venue region, named venue, theme, budget range (RM),
+   pax capacity, services included, and an illustrated "photo" motif. */
+const WEDDINGS = [
+  {
+    name: "Taman Sari Garden Akad & Sanding",
+    category: "Malay", venue: "Around Kuala Lumpur", venueName: "Glasshouse-style garden, Seputeh KL",
+    theme: "Outdoor Wedding", budget: [10000, 30000], pax: 300,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "R&B Food Stalls", "Pelamin", "Number of Tables"],
+    desc: "A breezy garden kenduri with a floral pelamin under the trees, live rendang and satay stalls, and a golden-hour outdoor sanding ceremony.",
+    motif: "pelamin", palette: ["#e8f0e4", "#cfe0c8", "#4a5d4e"]
+  },
+  {
+    name: "Istana Songket Royal Ballroom",
+    category: "Malay", venue: "Around Kuala Lumpur", venueName: "5-star hotel ballroom, KLCC",
+    theme: "Ballroom", budget: [60000, 100000], pax: 600,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "Videographer", "Pelamin", "Number of Tables", "Catering", "Live Band / DJ", "Emcee", "Door Gifts", "Decorations & Florals"],
+    desc: "A songket-and-gold grand ballroom reception with a raised pelamin stage, kompang procession entrance and 10-course banquet.",
+    motif: "chandelier", palette: ["#f4ead8", "#e3cfa4", "#b08d4f"]
+  },
+  {
+    name: "Kampung Chic Kenduri",
+    category: "Malay", venue: "Selangor", venueName: "Private lawn & marquee, Shah Alam",
+    theme: "Rustic Kampung", budget: [5000, 10000], pax: 500,
+    services: ["R&B Food Stalls", "Pelamin", "Number of Tables", "Catering"],
+    desc: "The classic open-house kenduri kahwin — canopy tents, nasi minyak dome, bunga manggar, and food stalls that keep the whole kampung fed.",
+    motif: "canopy", palette: ["#fdf1e0", "#f3d9b6", "#c98d4b"]
+  },
+  {
+    name: "Riverside Nikah by the Fireflies",
+    category: "Malay", venue: "Selangor", venueName: "Riverside resort, Kuala Selangor",
+    theme: "Outdoor Wedding", budget: [10000, 30000], pax: 150,
+    services: ["Make-up Artist (MUA)", "Photographer", "Pelamin", "Catering", "Decorations & Florals"],
+    desc: "An intimate riverside nikah at dusk with a minimalist rattan pelamin, followed by a firefly river cruise for the couple.",
+    motif: "pelamin", palette: ["#e4ecf0", "#b9cfd8", "#4e6d7c"]
+  },
+  {
+    name: "Double Happiness Grand Banquet",
+    category: "Chinese", venue: "Around Kuala Lumpur", venueName: "Chinese restaurant grand hall, Cheras",
+    theme: "Banquet Hall", budget: [30000, 60000], pax: 500,
+    services: ["Make-up Artist (MUA)", "Photographer", "Videographer", "Number of Tables", "Catering", "Emcee", "Live Band / DJ", "Door Gifts"],
+    desc: "A nine-course sit-down dinner under red lanterns with yam seng toasts, tea ceremony corner and a LED backdrop for the couple's grand march-in.",
+    motif: "lanterns", palette: ["#f9e3dd", "#f0b9ac", "#a63d2f"]
+  },
+  {
+    name: "Peony & Tea Ceremony Morning",
+    category: "Chinese", venue: "Penang", venueName: "Heritage shophouse courtyard, George Town",
+    theme: "Heritage Courtyard", budget: [10000, 30000], pax: 100,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "Decorations & Florals", "Door Gifts"],
+    desc: "An heirloom-style morning: door games, tea ceremony beneath a peony arch, and portraits along George Town's heritage shutters and tiles.",
+    motif: "arch", palette: ["#fbeae6", "#f2c6bc", "#c26a5a"]
+  },
+  {
+    name: "Skyline Modern Chinese Dinner",
+    category: "Chinese", venue: "Around Kuala Lumpur", venueName: "Rooftop event space, Bangsar",
+    theme: "Rooftop City View", budget: [60000, 100000], pax: 300,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "Videographer", "Number of Tables", "Catering", "Live Band / DJ", "Emcee"],
+    desc: "A contemporary banquet against the KL skyline — champagne tower, cinematic same-day-edit video, and a live jazz trio.",
+    motif: "skyline", palette: ["#e7e6f0", "#c3c1dd", "#54517c"]
+  },
+  {
+    name: "Temple of Flowers Muhurtham",
+    category: "Indian", venue: "Around Kuala Lumpur", venueName: "Wedding hall near Batu Caves",
+    theme: "Traditional Temple", budget: [10000, 30000], pax: 300,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "Videographer", "Catering", "Decorations & Florals"],
+    desc: "A vibrant Tamil wedding with a jasmine-and-marigold manavarai, nadaswaram musicians, and a full banana-leaf vegetarian feast.",
+    motif: "mandala", palette: ["#fdeede", "#f6cf9a", "#c77b28"]
+  },
+  {
+    name: "Maligai Grand Sangeet & Wedding",
+    category: "Indian", venue: "Selangor", venueName: "Convention centre, Subang Jaya",
+    theme: "Ballroom", budget: [60000, 100000], pax: 800,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "Videographer", "Number of Tables", "Catering", "Live Band / DJ", "Emcee", "Decorations & Florals", "Door Gifts"],
+    desc: "Two nights of celebration — a Bollywood-style sangeet with DJ and dhol players, then a grand muhurtham for eight hundred guests.",
+    motif: "chandelier", palette: ["#f6e2ec", "#e8b6cf", "#9c4472"]
+  },
+  {
+    name: "Seaside Mehndi & Vows",
+    category: "Indian", venue: "Langkawi", venueName: "Beachfront resort lawn, Langkawi",
+    theme: "Beach Wedding", budget: [30000, 60000], pax: 150,
+    services: ["Make-up Artist (MUA)", "Photographer", "Videographer", "Catering", "Decorations & Florals"],
+    desc: "A destination mehndi night and beachside ceremony with a floral mandap facing the Andaman Sea.",
+    motif: "beach", palette: ["#e0f0ef", "#b3dbd8", "#37746f"]
+  },
+  {
+    name: "Baba Nyonya Heritage Feast",
+    category: "Peranakan", venue: "Malacca", venueName: "Peranakan mansion, Jonker Street",
+    theme: "Heritage Courtyard", budget: [30000, 60000], pax: 200,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "Number of Tables", "Catering", "Decorations & Florals", "Door Gifts"],
+    desc: "A tok panjang long-table feast in a candle-lit Peranakan mansion, with kebaya-clad bridal party and antique gilded décor.",
+    motif: "tiles", palette: ["#e8f2ee", "#f2d3d8", "#3f7267"]
+  },
+  {
+    name: "Nyonya Garden High Tea",
+    category: "Peranakan", venue: "Penang", venueName: "Botanic garden pavilion, Penang",
+    theme: "Garden Party", budget: [10000, 30000], pax: 120,
+    services: ["Make-up Artist (MUA)", "Photographer", "Catering", "Decorations & Florals"],
+    desc: "A pastel afternoon reception of kuih towers, kebaya lace and bunga telur favours in a shaded garden pavilion.",
+    motif: "arch", palette: ["#eaf3ea", "#f7dfe3", "#5c8a63"]
+  },
+  {
+    name: "Borneo Longhouse Union",
+    category: "Fusion", venue: "Kota Kinabalu", venueName: "Cultural village & resort, Kota Kinabalu",
+    theme: "Cultural Fusion", budget: [30000, 60000], pax: 400,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "Videographer", "Catering", "Live Band / DJ", "Decorations & Florals"],
+    desc: "A Sabahan celebration blending Kadazan-Dusun ceremony with a modern resort dinner, gong ensemble and sumazau dance.",
+    motif: "canopy", palette: ["#ece7dc", "#d8cbae", "#6b5b3e"]
+  },
+  {
+    name: "Two Ceremonies, One Love",
+    category: "Fusion", venue: "Around Kuala Lumpur", venueName: "Boutique event hall, Petaling Jaya",
+    theme: "Modern Minimalist", budget: [30000, 60000], pax: 250,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "Videographer", "Pelamin", "Number of Tables", "Catering", "Emcee"],
+    desc: "A Malay-Chinese fusion day — morning akad with a minimalist pelamin, evening tea ceremony and banquet, with two outfit changes covered.",
+    motif: "arch", palette: ["#f0ece6", "#ddd2c2", "#8a7a63"]
+  },
+  {
+    name: "Highlands Mist Garden Vows",
+    category: "Fusion", venue: "Pahang", venueName: "English garden venue, Cameron Highlands",
+    theme: "Garden Party", budget: [10000, 30000], pax: 80,
+    services: ["Photographer", "Videographer", "Catering", "Decorations & Florals"],
+    desc: "An intimate cool-climate ceremony among tea valleys and roses, with a long-table lunch under festoon lights.",
+    motif: "beach", palette: ["#e6efe9", "#c2d8cb", "#48705a"]
+  },
+  {
+    name: "Johor Grand Istana Reception",
+    category: "Malay", venue: "Johor Bahru", venueName: "Banquet hall, Johor Bahru",
+    theme: "Ballroom", budget: [30000, 60000], pax: 700,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "R&B Food Stalls", "Pelamin", "Number of Tables", "Catering", "Emcee", "Door Gifts"],
+    desc: "A southern-style grand kenduri with laksa Johor stalls, a crystal pelamin and silat performance to welcome the royal couple of the day.",
+    motif: "chandelier", palette: ["#f2e8e8", "#e0c4c4", "#7c3a3a"]
+  },
+  {
+    name: "Straits Sunset Beach Nikah",
+    category: "Malay", venue: "Terengganu", venueName: "Beach resort, Terengganu",
+    theme: "Beach Wedding", budget: [10000, 30000], pax: 100,
+    services: ["Make-up Artist (MUA)", "Photographer", "Pelamin", "Catering"],
+    desc: "Barefoot on the East Coast sand — a sunset akad nikah with a driftwood pelamin and seafood barbecue for close family.",
+    motif: "beach", palette: ["#fdeedd", "#f7cfa2", "#cf8a45"]
+  },
+  {
+    name: "Lakeside Lantern Dinner",
+    category: "Chinese", venue: "Putrajaya", venueName: "Lakeside marquee, Putrajaya",
+    theme: "Outdoor Wedding", budget: [30000, 60000], pax: 300,
+    services: ["Make-up Artist (MUA)", "Wedding Dress & Attire", "Photographer", "Number of Tables", "Catering", "Live Band / DJ", "Decorations & Florals"],
+    desc: "An al-fresco banquet by the Putrajaya lake, ending with a release of glowing lanterns over the water.",
+    motif: "lanterns", palette: ["#e3ecf2", "#bcd3e2", "#3e6a8a"]
+  }
+];
+
+/* ============ Illustrated card art (inline SVG "photos") ============ */
+function art(motif, [bg1, bg2, accent], seed) {
+  const gid = "g" + seed;
+  const defs = `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="${bg1}"/><stop offset="1" stop-color="${bg2}"/>
+  </linearGradient></defs>
+  <rect width="400" height="220" fill="url(#${gid})"/>`;
+  const motifs = {
+    pelamin: `
+      <path d="M110 220 V120 Q200 40 290 120 V220" fill="none" stroke="${accent}" stroke-width="5" opacity=".85"/>
+      <path d="M125 220 V128 Q200 60 275 128 V220" fill="none" stroke="${accent}" stroke-width="2" opacity=".4"/>
+      ${flowers(accent, [[110,120],[290,120],[150,84],[250,84],[200,62]])}
+      <circle cx="185" cy="185" r="13" fill="${accent}" opacity=".55"/>
+      <circle cx="215" cy="185" r="13" fill="${accent}" opacity=".75"/>`,
+    chandelier: `
+      <path d="M200 20 v30" stroke="${accent}" stroke-width="3"/>
+      <path d="M140 90 Q200 130 260 90" fill="none" stroke="${accent}" stroke-width="4"/>
+      <path d="M155 60 Q200 95 245 60" fill="none" stroke="${accent}" stroke-width="3" opacity=".7"/>
+      ${[140,170,200,230,260].map(x=>`<circle cx="${x}" cy="${x===200?132:x===170||x===230?116:92}" r="6" fill="${accent}" opacity=".8"/>`).join("")}
+      <path d="M60 220 h280" stroke="${accent}" stroke-width="2" opacity=".3"/>
+      <rect x="120" y="170" width="160" height="50" rx="6" fill="${accent}" opacity=".18"/>`,
+    canopy: `
+      <path d="M40 100 L120 60 L200 100 L280 60 L360 100" fill="none" stroke="${accent}" stroke-width="4"/>
+      <path d="M40 100 V220 M200 100 V220 M360 100 V220" stroke="${accent}" stroke-width="3" opacity=".5"/>
+      <path d="M70 130 q10 14 0 28 M330 130 q-10 14 0 28" stroke="${accent}" stroke-width="2.5" fill="none" opacity=".6"/>
+      <circle cx="120" cy="60" r="6" fill="${accent}"/><circle cx="280" cy="60" r="6" fill="${accent}"/>
+      <rect x="150" y="160" width="100" height="60" rx="8" fill="${accent}" opacity=".2"/>`,
+    lanterns: `
+      ${[[90,70],[200,50],[310,70],[145,110],[255,110]].map(([x,y],i)=>`
+        <line x1="${x}" y1="0" x2="${x}" y2="${y-24}" stroke="${accent}" stroke-width="2" opacity=".5"/>
+        <ellipse cx="${x}" cy="${y}" rx="20" ry="24" fill="${accent}" opacity="${.55+i*.08}"/>
+        <line x1="${x}" y1="${y+24}" x2="${x}" y2="${y+38}" stroke="${accent}" stroke-width="2"/>`).join("")}
+      <path d="M0 220 Q200 190 400 220" fill="${accent}" opacity=".15"/>`,
+    arch: `
+      <circle cx="200" cy="120" r="75" fill="none" stroke="${accent}" stroke-width="4" opacity=".8"/>
+      <circle cx="200" cy="120" r="60" fill="none" stroke="${accent}" stroke-width="1.5" opacity=".4"/>
+      ${flowers(accent, [[200,45],[135,90],[265,90],[148,172],[252,172]])}
+      <circle cx="188" cy="128" r="10" fill="${accent}" opacity=".55"/>
+      <circle cx="212" cy="128" r="10" fill="${accent}" opacity=".75"/>`,
+    skyline: `
+      ${[[30,120],[75,80],[120,140],[165,60],[210,110],[255,75],[300,130],[345,95]].map(([x,y])=>
+        `<rect x="${x}" y="${y}" width="34" height="${220-y}" fill="${accent}" opacity=".35"/>`).join("")}
+      <rect x="165" y="60" width="34" height="160" fill="${accent}" opacity=".55"/>
+      <circle cx="330" cy="40" r="16" fill="${accent}" opacity=".8"/>
+      <path d="M0 220 h400" stroke="${accent}" stroke-width="3" opacity=".6"/>`,
+    mandala: `
+      <g transform="translate(200,110)">
+        ${Array.from({length:12},(_,i)=>`<ellipse rx="14" ry="44" fill="${accent}" opacity=".3" transform="rotate(${i*30})"/>`).join("")}
+        <circle r="22" fill="${accent}" opacity=".85"/>
+        <circle r="60" fill="none" stroke="${accent}" stroke-width="2" opacity=".5"/>
+      </g>
+      <path d="M0 210 h400" stroke="${accent}" stroke-width="2" opacity=".35"/>
+      ${flowers(accent, [[60,190],[340,190]])}`,
+    beach: `
+      <circle cx="200" cy="95" r="34" fill="${accent}" opacity=".8"/>
+      <path d="M0 140 Q100 125 200 140 T400 140 V220 H0 Z" fill="${accent}" opacity=".25"/>
+      <path d="M0 165 Q100 150 200 165 T400 165" fill="none" stroke="${accent}" stroke-width="2" opacity=".5"/>
+      <path d="M330 130 q-6 -50 10 -85 M330 130 q-28 -22 -60 -26 M330 130 q30 -20 58 -20" stroke="${accent}" stroke-width="3" fill="none" opacity=".7"/>
+      <line x1="330" y1="130" x2="330" y2="200" stroke="${accent}" stroke-width="4" opacity=".7"/>`,
+    tiles: `
+      ${Array.from({length:5},(_,r)=>Array.from({length:9},(_,c)=>{
+        const on=(r+c)%2===0;
+        return `<rect x="${c*46-6}" y="${r*46-4}" width="42" height="42" rx="6" fill="${accent}" opacity="${on?.28:.12}"/>`;
+      }).join("")).join("")}
+      ${flowers(accent, [[86,84],[200,130],[314,84]])}`
+  };
+  return `<svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" role="img" aria-hidden="true">${defs}${motifs[motif] || motifs.arch}</svg>`;
+}
+function flowers(color, points) {
+  return points.map(([x, y]) => `
+    <g transform="translate(${x},${y})">
+      ${Array.from({length:5},(_,i)=>`<circle cx="${8*Math.cos(i*1.257)}" cy="${8*Math.sin(i*1.257)}" r="5.5" fill="${color}" opacity=".65"/>`).join("")}
+      <circle r="4" fill="#fdfbf6" opacity=".9"/>
+    </g>`).join("");
+}
+
+/* ============ State & filtering ============ */
+const CATEGORIES = ["All", "Malay", "Chinese", "Indian", "Peranakan", "Fusion"];
+const state = { category: "All", venue: "", theme: "", budget: "", pax: "", services: new Set() };
+
+const fmtRM = n => "RM" + n.toLocaleString("en-MY");
+const budgetLabel = ([lo, hi]) => hi >= 999999999 ? `Above ${fmtRM(lo)}` : `${fmtRM(lo)} – ${fmtRM(hi)}`;
+
+function matches(w) {
+  if (state.category !== "All" && w.category !== state.category) return false;
+  if (state.venue && w.venue !== state.venue) return false;
+  if (state.theme && w.theme !== state.theme) return false;
+  if (state.budget) {
+    const [lo, hi] = state.budget.split("-").map(Number);
+    if (w.budget[1] < lo || w.budget[0] > hi) return false; // ranges must overlap
+  }
+  if (state.pax) {
+    const [lo, hi] = state.pax.split("-").map(Number);
+    if (w.pax < lo || w.pax > hi) return false;
+  }
+  for (const s of state.services) if (!w.services.includes(s)) return false;
+  return true;
+}
+
+/* ============ Rendering ============ */
+const $ = id => document.getElementById(id);
+
+function renderTabs() {
+  $("categoryTabs").innerHTML = CATEGORIES.map(c =>
+    `<button class="cat-btn ${c === state.category ? "active" : ""}" data-cat="${c}">
+      ${c === "All" ? "All Weddings" : c + " Wedding"}</button>`).join("");
+}
+
+function populateFilters() {
+  const venues = [...new Set(WEDDINGS.map(w => w.venue))].sort();
+  const themes = [...new Set(WEDDINGS.map(w => w.theme))].sort();
+  $("venueSel").innerHTML += venues.map(v => `<option>${v}</option>`).join("");
+  $("themeSel").innerHTML += themes.map(t => `<option>${t}</option>`).join("");
+  $("servicesList").innerHTML = SERVICES.map(s =>
+    `<label class="chk"><input type="checkbox" value="${s}"> ${s}</label>`).join("");
+}
+
+function renderGrid() {
+  const results = WEDDINGS.filter(matches);
+  $("galleryTitle").textContent = state.category === "All" ? "All Weddings" : state.category + " Weddings";
+  $("resultCount").textContent = results.length
+    ? `${results.length} wedding${results.length > 1 ? "s" : ""} found`
+    : "";
+  $("emptyState").hidden = results.length > 0;
+  $("grid").innerHTML = results.map(w => {
+    const i = WEDDINGS.indexOf(w);
+    const shown = w.services.slice(0, 3);
+    const extra = w.services.length - shown.length;
+    return `
+    <article class="card" data-i="${i}" tabindex="0" role="button" aria-label="${w.name}">
+      <div class="art">${art(w.motif, w.palette, i)}
+        <span class="cat-tag">${w.category}</span>
+      </div>
+      <div class="body">
+        <h3>${w.name}</h3>
+        <div class="meta">
+          <span>📍 <b>${w.venue}</b> · ${w.theme}</span>
+          <span>👥 ${w.pax} pax</span>
+        </div>
+        <div class="price">${budgetLabel(w.budget)}</div>
+        <div class="chips">
+          ${shown.map(s => `<span class="chip">${s}</span>`).join("")}
+          ${extra > 0 ? `<span class="chip more">+${extra} more</span>` : ""}
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+function openModal(w, i) {
+  $("modalArt").innerHTML = art(w.motif, w.palette, "m" + i);
+  $("mCat").textContent = w.category + " Wedding";
+  $("mName").textContent = w.name;
+  $("mDesc").textContent = w.desc;
+  $("mVenue").textContent = `${w.venueName} (${w.venue})`;
+  $("mTheme").textContent = w.theme;
+  $("mBudget").textContent = budgetLabel(w.budget);
+  $("mPax").textContent = `Up to ${w.pax} guests`;
+  $("mServices").innerHTML = w.services.map(s => `<span class="chip">✓ ${s}</span>`).join("");
+  $("enquireBtn").onclick = () => {
+    alert(`Thank you! Your enquiry for “${w.name}” has been noted.\n(Connect this button to your booking form or WhatsApp link.)`);
+  };
+  $("detail").showModal();
+}
+
+/* ============ Events ============ */
+$("categoryTabs").addEventListener("click", e => {
+  const btn = e.target.closest("[data-cat]");
+  if (!btn) return;
+  state.category = btn.dataset.cat;
+  renderTabs();
+  renderGrid();
+});
+$("venueSel").addEventListener("change", e => { state.venue = e.target.value; renderGrid(); });
+$("themeSel").addEventListener("change", e => { state.theme = e.target.value; renderGrid(); });
+$("budgetSel").addEventListener("change", e => { state.budget = e.target.value; renderGrid(); });
+$("paxSel").addEventListener("change", e => { state.pax = e.target.value; renderGrid(); });
+$("servicesList").addEventListener("change", e => {
+  const v = e.target.value;
+  e.target.checked ? state.services.add(v) : state.services.delete(v);
+  renderGrid();
+});
+$("clearBtn").addEventListener("click", () => {
+  state.category = "All"; state.venue = ""; state.theme = ""; state.budget = ""; state.pax = "";
+  state.services.clear();
+  $("venueSel").value = ""; $("themeSel").value = ""; $("budgetSel").value = ""; $("paxSel").value = "";
+  document.querySelectorAll("#servicesList input").forEach(c => c.checked = false);
+  renderTabs(); renderGrid();
+});
+$("grid").addEventListener("click", e => {
+  const card = e.target.closest(".card");
+  if (card) openModal(WEDDINGS[+card.dataset.i], card.dataset.i);
+});
+$("grid").addEventListener("keydown", e => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const card = e.target.closest(".card");
+  if (card) { e.preventDefault(); openModal(WEDDINGS[+card.dataset.i], card.dataset.i); }
+});
+$("closeBtn").addEventListener("click", () => $("detail").close());
+$("detail").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
+
+/* ============ Init ============ */
+renderTabs();
+populateFilters();
+renderGrid();
+</script>
+</body>
+</html>
